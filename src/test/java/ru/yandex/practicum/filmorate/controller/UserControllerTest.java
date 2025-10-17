@@ -198,4 +198,20 @@ class UserControllerTest {
         User createdUser = userController.create(user);
         assertNotNull(createdUser.getId());
     }
+
+    @Test
+    void shouldThrowExceptionWhenEmailIsInvalid() {
+        User user = new User();
+        user.setEmail("mail.ru"); // Некорректный email без @
+        user.setLogin("login");
+        user.setName("Name");
+        user.setBirthday(LocalDate.of(1990, 1, 1));
+
+        try {
+            userController.create(user);
+
+        } catch (ValidationException e) {
+            assertEquals("Email должен быть корректным адресом", e.getMessage());
+        }
+    }
 }
