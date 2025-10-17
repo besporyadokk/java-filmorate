@@ -27,13 +27,13 @@ public class UserController {
     @PostMapping
     public User create(@RequestBody User user) {
         log.info("Обрабатывается запрос добавления пользователя");
-        if (user.getEmail() == null || user.getEmail().isBlank() || (!user.getEmail().contains("@") && user.getEmail().contains("."))) {
-            log.warn("!! Добавление пользователя с некорректным email");
-            throw new ValidationException("Email должен быть корректным адресом");
-        }
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             log.warn("!! Добавление пользователя с пустым email");
             throw new ValidationException("Email не может быть пустым");
+        }
+        if (!user.getEmail().contains("@") && user.getEmail().contains(".")) {
+            log.warn("!! Добавление пользователя с некорректным email");
+            throw new ValidationException("Email должен быть корректным адресом");
         }
         if (user.getLogin() == null || user.getLogin().isBlank()) {
             log.warn("!! Добавление пользователя с пустым логином");
@@ -62,13 +62,13 @@ public class UserController {
             log.warn("!! Попытка обновления несуществующего пользователя с id: {}", user.getId());
             throw new ValidationException("Пользователь с id " + user.getId() + " не найден");
         }
-        if (user.getEmail() == null || user.getEmail().isBlank() || (!user.getEmail().contains("@") && user.getEmail().contains("."))) {
-            log.warn("!! Обновление пользователя с некорректным email");
-            throw new ValidationException("Email должен быть корректным адресом");
-        }
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             log.warn("!! Обновление пользователя с пустым email");
             throw new ValidationException("Email не может быть пустым");
+        }
+        if ((!user.getEmail().contains("@") && user.getEmail().contains("."))) {
+            log.warn("!! Обновление пользователя с некорректным email");
+            throw new ValidationException("Email должен быть корректным адресом");
         }
         if (user.getLogin() == null || user.getLogin().isBlank()) {
             log.warn("!! Обновление пользователя с пустым логином");
