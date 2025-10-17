@@ -58,7 +58,7 @@ public class UserController {
             log.warn("!! Попытка обновления несуществующего пользователя с id: {}", user.getId());
             throw new ValidationException("Пользователь с id " + user.getId() + " не найден");
         }
-        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
+        if (user.getEmail() == null || user.getEmail().isBlank() || (!user.getEmail().contains("@") && user.getEmail().contains("."))) {
             log.warn("!! Обновление пользователя с некорректным email");
             throw new ValidationException("Email должен быть корректным адресом");
         }
