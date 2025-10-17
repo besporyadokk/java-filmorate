@@ -30,7 +30,7 @@ class UserControllerTest {
         try {
             userController.create(user);
         } catch (ValidationException e) {
-            assertEquals("Email не может быть пустым и должен содержать @", e.getMessage());
+            assertEquals("Email не может быть пустым", e.getMessage());
         }
     }
 
@@ -46,7 +46,7 @@ class UserControllerTest {
             userController.create(user);
 
         } catch (ValidationException e) {
-            assertEquals("Email не может быть пустым и должен содержать @", e.getMessage());
+            assertEquals("Email не может быть пустым", e.getMessage());
         }
     }
 
@@ -76,7 +76,7 @@ class UserControllerTest {
             userController.create(user);
 
         } catch (ValidationException e) {
-            assertEquals("Логин не может быть пустым и содержать пробелы", e.getMessage());
+            assertEquals("Логин не может быть пустым", e.getMessage());
         }
     }
 
@@ -92,7 +92,7 @@ class UserControllerTest {
             userController.create(user);
 
         } catch (ValidationException e) {
-            assertEquals("Логин не может быть пустым и содержать пробелы", e.getMessage());
+            assertEquals("Логин не может быть пустым", e.getMessage());
         }
     }
 
