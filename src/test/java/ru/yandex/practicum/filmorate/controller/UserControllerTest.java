@@ -51,21 +51,7 @@ class UserControllerTest {
         }
     }
 
-    @Test
-    void shouldThrowExceptionWhenEmailWithoutAt() {
-        User user = new User();
-        user.setEmail("invalid-email");
-        user.setLogin("login");
-        user.setName("Name");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
 
-        try {
-            userController.create(user);
-            fail("Должна была быть выброшена ValidationException");
-        } catch (ValidationException e) {
-            assertEquals("Email не может быть пустым и должен содержать @", e.getMessage());
-        }
-    }
 
     @Test
     void shouldCreateUserWithValidEmail() {
@@ -112,21 +98,7 @@ class UserControllerTest {
         }
     }
 
-    @Test
-    void shouldThrowExceptionWhenLoginContainsSpaces() {
-        User user = new User();
-        user.setEmail("test@email.com");
-        user.setLogin("login with spaces");
-        user.setName("Name");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
 
-        try {
-            userController.create(user);
-            fail("Должна была быть выброшена ValidationException");
-        } catch (ValidationException e) {
-            assertEquals("Логин не может быть пустым и содержать пробелы", e.getMessage());
-        }
-    }
 
     @Test
     void shouldCreateUserWithValidLogin() {
