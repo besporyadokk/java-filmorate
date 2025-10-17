@@ -78,11 +78,6 @@ public class FilmController {
 
     // вспомогательный метод для генерации идентификатора нового поста
     private Integer getNextId() {
-        Integer currentMaxId = (int) filmsMap.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return nextId++;
     }
 }

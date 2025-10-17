@@ -39,7 +39,7 @@ public class UserController {
             log.warn("!! Добавление пользователя с неверной датой рождения");
             throw new ValidationException("Дата рождения не может быть в будущем");
         }
-        if (user.getName().isBlank()) {
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.warn("!! Имя пользователя пустое - будет использован логин");
         }
@@ -66,7 +66,7 @@ public class UserController {
             log.warn("!! Обновление пользователя с неверной датой рождения");
             throw new ValidationException("Дата рождения не может быть в будущем");
         }
-        if (user.getName().isBlank()) {
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.warn("!! Имя пользователя пустое - будет использован логин");
         }
@@ -77,11 +77,6 @@ public class UserController {
 
     // вспомогательный метод для генерации идентификатора нового поста
     private Integer getNextId() {
-        Integer currentMaxId = (int) usersMap.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return nextId++;
     }
 }
