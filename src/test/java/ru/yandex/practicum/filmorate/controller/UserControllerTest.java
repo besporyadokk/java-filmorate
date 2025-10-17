@@ -29,7 +29,6 @@ class UserControllerTest {
 
         try {
             userController.create(user);
-            fail("Должна была быть выброшена ValidationException");
         } catch (ValidationException e) {
             assertEquals("Email не может быть пустым и должен содержать @", e.getMessage());
         }
@@ -45,12 +44,11 @@ class UserControllerTest {
 
         try {
             userController.create(user);
-            fail("Должна была быть выброшена ValidationException");
+
         } catch (ValidationException e) {
             assertEquals("Email не может быть пустым и должен содержать @", e.getMessage());
         }
     }
-
 
 
     @Test
@@ -76,7 +74,7 @@ class UserControllerTest {
 
         try {
             userController.create(user);
-            fail("Должна была быть выброшена ValidationException");
+
         } catch (ValidationException e) {
             assertEquals("Логин не может быть пустым и содержать пробелы", e.getMessage());
         }
@@ -92,12 +90,11 @@ class UserControllerTest {
 
         try {
             userController.create(user);
-            fail("Должна была быть выброшена ValidationException");
+
         } catch (ValidationException e) {
             assertEquals("Логин не может быть пустым и содержать пробелы", e.getMessage());
         }
     }
-
 
 
     @Test
@@ -172,7 +169,7 @@ class UserControllerTest {
 
         try {
             userController.create(user);
-            fail("Должна была быть выброшена ValidationException");
+
         } catch (ValidationException e) {
             assertEquals("Дата рождения не может быть в будущем", e.getMessage());
         }

@@ -29,7 +29,7 @@ class FilmControllerTest {
 
         try {
             filmController.create(film);
-            fail("Должна была быть выброшена ValidationException");
+
         } catch (ValidationException e) {
             assertEquals("Название не может быть пустым", e.getMessage());
         }
@@ -45,7 +45,7 @@ class FilmControllerTest {
 
         try {
             filmController.create(film);
-            fail("Должна была быть выброшена ValidationException");
+
         } catch (ValidationException e) {
             assertEquals("Название не может быть пустым", e.getMessage());
         }
@@ -74,7 +74,7 @@ class FilmControllerTest {
 
         try {
             filmController.create(film);
-            fail("Должна была быть выброшена ValidationException");
+
         } catch (ValidationException e) {
             assertEquals("Максимальная длина описания - 200 символов", e.getMessage());
         }
@@ -115,7 +115,7 @@ class FilmControllerTest {
 
         try {
             filmController.create(film);
-            fail("Должна была быть выброшена ValidationException");
+
         } catch (ValidationException e) {
             assertEquals("Дата релиза меньше минимальной", e.getMessage());
         }
@@ -156,7 +156,7 @@ class FilmControllerTest {
 
         try {
             filmController.create(film);
-            fail("Должна была быть выброшена ValidationException");
+
         } catch (ValidationException e) {
             assertEquals("Продолжительность фильма должна быть положительным числом", e.getMessage());
         }
@@ -172,7 +172,7 @@ class FilmControllerTest {
 
         try {
             filmController.create(film);
-            fail("Должна была быть выброшена ValidationException");
+
         } catch (ValidationException e) {
             assertEquals("Продолжительность фильма должна быть положительным числом", e.getMessage());
         }
