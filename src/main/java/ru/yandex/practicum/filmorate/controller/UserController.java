@@ -54,6 +54,14 @@ public class UserController {
     @PutMapping
     public User update(@RequestBody User user) {
         log.info("Обрабатывается запрос обновления пользователя");
+        if (!usersMap.containsKey(user.getId())) {
+            log.warn("!! Попытка обновления несуществующего пользователя с id: {}", user.getId());
+            throw new ValidationException("Пользователь с id " + user.getId() + " не найден");
+        }
+        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
+            log.warn("!! Обновление пользователя с некорректным email");
+            throw new ValidationException("Email должен быть корректным адресом");
+        }
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             log.warn("!! Обновление пользователя с пустым email");
             throw new ValidationException("Email не может быть пустым");

@@ -53,6 +53,10 @@ public class FilmController {
     @PutMapping
     public Film update(@RequestBody Film film) {
         log.info("Обрабатывается запрос на обновление фильма");
+        if (!filmsMap.containsKey(film.getId())) {
+            log.warn("!! Попытка обновления несуществующего фильма с id: {}", film.getId());
+            throw new ValidationException("Фильм с id " + film.getId() + " не найден");
+        }
         if (film.getName() == null || film.getName().isBlank()) {
             log.warn("!! Обновление фильма с пустым названием");
             throw new ValidationException("Название не может быть пустым");
