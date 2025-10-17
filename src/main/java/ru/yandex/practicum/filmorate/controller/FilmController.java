@@ -37,7 +37,7 @@ public class FilmController {
             log.warn("!! Добавление фильма с датой релиза меньше минимальной");
             throw new ValidationException("Дата релиза меньше минимальной");
         }
-        if (film.getDuration() < 0) {
+        if (film.getDuration() <= 0) {
             log.warn("!! Добавление фильма с отрицательной продолжительностью");
             throw new ValidationException("Продолжительность фильма должна быть положительным числом");
         }
@@ -65,7 +65,7 @@ public class FilmController {
             log.warn("!! Обновление фильма с датой релиза меньше минимальной");
             throw new ValidationException("Дата релиза меньше минимальной");
         }
-        if (film.getDuration() < 0) {
+        if (film.getDuration() <= 0) {
             log.warn("!! Обновление фильма с отрицательной продолжительностью");
             throw new ValidationException("Продолжительность фильма должна быть положительным числом");
         }
