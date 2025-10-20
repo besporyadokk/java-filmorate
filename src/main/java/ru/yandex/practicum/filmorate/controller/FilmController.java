@@ -37,13 +37,6 @@ public class FilmController {
     }
 
 
-        film.setId(getNextId());
-        filmsMap.put(film.getId(), film);
-        log.info("Фильм успешно добавлен");
-        return film;
-    }
-
-
     @PutMapping
     public Film update(@RequestBody Film film) {
         log.info("Обрабатывается запрос на обновление фильма");
