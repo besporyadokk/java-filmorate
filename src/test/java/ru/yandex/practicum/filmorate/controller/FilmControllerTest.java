@@ -18,7 +18,6 @@ class FilmControllerTest {
         filmController = new FilmController();
     }
 
-    // Тесты для названия фильма
     @Test
     void shouldThrowExceptionWhenFilmNameIsNull() {
         Film film = new Film();
@@ -27,12 +26,11 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
         film.setDuration(120L);
 
-        try {
-            filmController.create(film);
-
-        } catch (ValidationException e) {
-            assertEquals("Название не может быть пустым", e.getMessage());
-        }
+        ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> filmController.create(film)
+        );
+        assertEquals("Название не может быть пустым", exception.getMessage());
     }
 
     @Test
@@ -43,12 +41,11 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
         film.setDuration(120L);
 
-        try {
-            filmController.create(film);
-
-        } catch (ValidationException e) {
-            assertEquals("Название не может быть пустым", e.getMessage());
-        }
+        ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> filmController.create(film)
+        );
+        assertEquals("Название не может быть пустым", exception.getMessage());
     }
 
     @Test
@@ -63,7 +60,7 @@ class FilmControllerTest {
         assertNotNull(createdFilm.getId());
     }
 
-    // Тесты для описания фильма
+
     @Test
     void shouldThrowExceptionWhenDescriptionTooLong() {
         Film film = new Film();
@@ -72,12 +69,11 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
         film.setDuration(120L);
 
-        try {
-            filmController.create(film);
-
-        } catch (ValidationException e) {
-            assertEquals("Максимальная длина описания - 200 символов", e.getMessage());
-        }
+        ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> filmController.create(film)
+        );
+        assertEquals("Максимальная длина описания - 200 символов", exception.getMessage());
     }
 
     @Test
@@ -104,7 +100,7 @@ class FilmControllerTest {
         assertNotNull(createdFilm.getId());
     }
 
-    // Тесты для даты релиза
+
     @Test
     void shouldThrowExceptionWhenReleaseDateBeforeMinDate() {
         Film film = new Film();
@@ -113,12 +109,11 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(1895, 12, 27)); // На день раньше
         film.setDuration(120L);
 
-        try {
-            filmController.create(film);
-
-        } catch (ValidationException e) {
-            assertEquals("Дата релиза меньше минимальной", e.getMessage());
-        }
+        ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> filmController.create(film)
+        );
+        assertEquals("Дата релиза меньше минимальной", exception.getMessage());
     }
 
     @Test
@@ -145,7 +140,7 @@ class FilmControllerTest {
         assertNotNull(createdFilm.getId());
     }
 
-    // Тесты для продолжительности
+
     @Test
     void shouldThrowExceptionWhenDurationNegative() {
         Film film = new Film();
@@ -154,12 +149,11 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
         film.setDuration(-1L);
 
-        try {
-            filmController.create(film);
-
-        } catch (ValidationException e) {
-            assertEquals("Продолжительность фильма должна быть положительным числом", e.getMessage());
-        }
+        ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> filmController.create(film)
+        );
+        assertEquals("Продолжительность фильма должна быть положительным числом", exception.getMessage());
     }
 
     @Test
@@ -170,12 +164,11 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
         film.setDuration(0L);
 
-        try {
-            filmController.create(film);
-
-        } catch (ValidationException e) {
-            assertEquals("Продолжительность фильма должна быть положительным числом", e.getMessage());
-        }
+        ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> filmController.create(film)
+        );
+        assertEquals("Продолжительность фильма должна быть положительным числом", exception.getMessage());
     }
 
     @Test

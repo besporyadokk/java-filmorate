@@ -18,7 +18,7 @@ class UserControllerTest {
         userController = new UserController();
     }
 
-    // Тесты для email
+
     @Test
     void shouldThrowExceptionWhenEmailIsNull() {
         User user = new User();
@@ -27,11 +27,11 @@ class UserControllerTest {
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
 
-        try {
-            userController.create(user);
-        } catch (ValidationException e) {
-            assertEquals("Email не может быть пустым", e.getMessage());
-        }
+        ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> userController.create(user)
+        );
+        assertEquals("Email не может быть пустым", exception.getMessage());
     }
 
     @Test
@@ -42,14 +42,12 @@ class UserControllerTest {
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
 
-        try {
-            userController.create(user);
-
-        } catch (ValidationException e) {
-            assertEquals("Email не может быть пустым", e.getMessage());
-        }
+        ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> userController.create(user)
+        );
+        assertEquals("Email не может быть пустым", exception.getMessage());
     }
-
 
     @Test
     void shouldCreateUserWithValidEmail() {
@@ -63,7 +61,7 @@ class UserControllerTest {
         assertNotNull(createdUser.getId());
     }
 
-    // Тесты для логина
+
     @Test
     void shouldThrowExceptionWhenLoginIsNull() {
         User user = new User();
@@ -72,12 +70,11 @@ class UserControllerTest {
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
 
-        try {
-            userController.create(user);
-
-        } catch (ValidationException e) {
-            assertEquals("Логин не может быть пустым", e.getMessage());
-        }
+        ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> userController.create(user)
+        );
+        assertEquals("Логин не может быть пустым", exception.getMessage());
     }
 
     @Test
@@ -88,14 +85,12 @@ class UserControllerTest {
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
 
-        try {
-            userController.create(user);
-
-        } catch (ValidationException e) {
-            assertEquals("Логин не может быть пустым", e.getMessage());
-        }
+        ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> userController.create(user)
+        );
+        assertEquals("Логин не может быть пустым", exception.getMessage());
     }
-
 
     @Test
     void shouldCreateUserWithValidLogin() {
@@ -109,7 +104,7 @@ class UserControllerTest {
         assertNotNull(createdUser.getId());
     }
 
-    // Тесты для имени
+
     @Test
     void shouldUseLoginWhenNameIsEmpty() {
         User user = new User();
@@ -158,7 +153,7 @@ class UserControllerTest {
         assertEquals("Real Name", createdUser.getName());
     }
 
-    // Тесты для даты рождения
+
     @Test
     void shouldThrowExceptionWhenBirthdayInFuture() {
         User user = new User();
@@ -167,12 +162,11 @@ class UserControllerTest {
         user.setName("Name");
         user.setBirthday(LocalDate.now().plusDays(1)); // Завтра
 
-        try {
-            userController.create(user);
-
-        } catch (ValidationException e) {
-            assertEquals("Дата рождения не может быть в будущем", e.getMessage());
-        }
+        ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> userController.create(user)
+        );
+        assertEquals("Дата рождения не может быть в будущем", exception.getMessage());
     }
 
     @Test
@@ -207,11 +201,10 @@ class UserControllerTest {
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
 
-        try {
-            userController.create(user);
-
-        } catch (ValidationException e) {
-            assertEquals("Email должен быть корректным адресом", e.getMessage());
-        }
+        ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> userController.create(user)
+        );
+        assertEquals("Email должен быть корректным адресом", exception.getMessage());
     }
 }

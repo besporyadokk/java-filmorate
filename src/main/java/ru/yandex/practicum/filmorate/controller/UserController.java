@@ -35,12 +35,6 @@ public class UserController {
         return user;
     }
 
-        user.setId(getNextId());
-        usersMap.put(user.getId(), user);
-        log.info("Пользователь успешно добавлен");
-        return user;
-    }
-
 
     @PutMapping
     public User update(@RequestBody User user) {
