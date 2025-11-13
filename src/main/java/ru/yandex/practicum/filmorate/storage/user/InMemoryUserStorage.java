@@ -42,7 +42,7 @@ public class InMemoryUserStorage implements UserStorage {
         }
     }
 
-    public void deleteUser(Integer id){
-         users.remove(id);
+    public void deleteUser(Integer id) {
+        users.remove(id);
     }
 }
