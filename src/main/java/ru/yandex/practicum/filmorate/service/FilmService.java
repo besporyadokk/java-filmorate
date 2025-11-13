@@ -74,13 +74,16 @@ public class FilmService {
                     + filmId);
         }
 
-        film.addLike(userId);
+
+        Set<Integer> likes = new HashSet<>(film.getLikes());
+        likes.add(userId);
+        film.setLikes(likes);
+        filmStorage.updateFilm(filmId, film);
 
         log.info("Пользователь {} поставил лайк фильму {} ", userId, filmId);
 
         return film;
     }
-
 
     public Film removeLike(Integer filmId, Integer userId) {
         Film film = filmStorage.getFilm(filmId);
@@ -97,7 +100,10 @@ public class FilmService {
                     + film);
         }
 
-        film.removeLike(userId);
+        Set<Integer> likes = new HashSet<>(film.getLikes());
+        likes.remove(userId);
+        film.setLikes(likes);
+        filmStorage.updateFilm(filmId, film);
 
         log.info("Пользователь {} удалил лайк фильму {} ", userId, filmId);
 

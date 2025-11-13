@@ -64,8 +64,17 @@ public class UserService {
             throw new FriendAddingException("Пользователи с айди " + userId + " и " + friendId +
                     " уже в друзьях друг у друга");
         }
-        user.addFriend(friendId);
-        friend.addFriend(userId);
+
+
+        Set<Integer> userFriends = new HashSet<>(user.getFriends());
+        userFriends.add(friendId);
+        user.setFriends(userFriends);
+        userStorage.updateUser(userId, user);
+
+        Set<Integer> friendFriends = new HashSet<>(friend.getFriends());
+        friendFriends.add(userId);
+        friend.setFriends(friendFriends);
+        userStorage.updateUser(friendId, friend);
 
         log.info("Пользователь {} добавил в друзья пользователя {} ", userId, friendId);
 
@@ -85,8 +94,15 @@ public class UserService {
         }
 
 
-        userStorage.deleteUser(friendId);
-        friend.deleteFriend(userId);
+        Set<Integer> userFriends = new HashSet<>(user.getFriends());
+        userFriends.remove(friendId);
+        user.setFriends(userFriends);
+        userStorage.updateUser(userId, user);
+
+        Set<Integer> friendFriends = new HashSet<>(friend.getFriends());
+        friendFriends.remove(userId);
+        friend.setFriends(friendFriends);
+        userStorage.updateUser(friendId, friend);
 
         log.info("Пользователь {} удалил из друзей пользователя {} ", userId, friendId);
 
