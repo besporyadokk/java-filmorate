@@ -9,8 +9,9 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -26,13 +27,13 @@ public class FilmService {
     private int nextId = 1;
 
     @Autowired
-    private InMemoryUserStorage userStorage;
+    private UserStorage userStorage;
     @Autowired
-    private InMemoryFilmStorage filmStorage;
+    private FilmStorage filmStorage;
 
 
     public Collection<Film> getFilms() {
-        return filmStorage.getFilms().values();
+        return new ArrayList<>(filmStorage.getFilms().values());
     }
 
     public Film addFilm(Film film) {

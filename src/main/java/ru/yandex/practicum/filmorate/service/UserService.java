@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.exception.FriendAddingException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -18,11 +18,11 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     @Autowired
-    private InMemoryUserStorage userStorage;
+    private UserStorage userStorage;
     private int nextId = 1;
 
     public Collection<User> getUsers() {
-        return userStorage.getUsers().values();
+        return new ArrayList<>(userStorage.getUsers().values());
     }
 
     public User addUser(User user) {
@@ -84,11 +84,8 @@ public class UserService {
             throw new NotFoundException("Пользователя с айди " + friendId + " не найдено");
         }
 
-       /* if (!user.getFriends().contains(friendId)) {
-            throw new FriendAddingException("Пользователи с айди " + userId + " и " + friendId +
-                    " нет в друзьях друг у друга");
-        }*/
-        user.deleteFriend(friendId);
+
+        userStorage.deleteUser(friendId);
         friend.deleteFriend(userId);
 
         log.info("Пользователь {} удалил из друзей пользователя {} ", userId, friendId);
