@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
 
@@ -19,6 +20,7 @@ class FilmControllerTest {
     @Test
     void shouldThrowExceptionWhenFilmNameIsNull() {
         Film film = new Film();
+        film.setMpa(new Mpa(1, "G"));
         film.setName(null);
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
@@ -34,6 +36,7 @@ class FilmControllerTest {
     @Test
     void shouldThrowExceptionWhenFilmNameIsBlank() {
         Film film = new Film();
+        film.setMpa(new Mpa(1, "G"));
         film.setName("   ");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
@@ -49,6 +52,7 @@ class FilmControllerTest {
     @Test
     void shouldCreateFilmWithValidName() {
         Film film = new Film();
+        film.setMpa(new Mpa(1, "G"));
         film.setName("Valid Name");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
@@ -61,6 +65,7 @@ class FilmControllerTest {
     @Test
     void shouldThrowExceptionWhenDescriptionTooLong() {
         Film film = new Film();
+        film.setMpa(new Mpa(1, "G"));
         film.setName("Film Name");
         film.setDescription("A".repeat(201)); // 201 символ
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
@@ -70,12 +75,13 @@ class FilmControllerTest {
                 ValidationException.class,
                 () -> filmController.create(film)
         );
-        assertEquals("Максимальная длина описания - 200 символов", exception.getMessage());
+        assertEquals("Максимальная длина описания — 200 символов", exception.getMessage());
     }
 
     @Test
     void shouldCreateFilmWithDescription200Characters() {
         Film film = new Film();
+        film.setMpa(new Mpa(1, "G"));
         film.setName("Film Name");
         film.setDescription("A".repeat(200)); // 200 символов
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
@@ -88,6 +94,7 @@ class FilmControllerTest {
     @Test
     void shouldCreateFilmWithShortDescription() {
         Film film = new Film();
+        film.setMpa(new Mpa(1, "G"));
         film.setName("Film Name");
         film.setDescription("Short");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
@@ -100,6 +107,7 @@ class FilmControllerTest {
     @Test
     void shouldThrowExceptionWhenReleaseDateBeforeMinDate() {
         Film film = new Film();
+        film.setMpa(new Mpa(1, "G"));
         film.setName("Film Name");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(1895, 12, 27)); // На день раньше
@@ -109,12 +117,13 @@ class FilmControllerTest {
                 ValidationException.class,
                 () -> filmController.create(film)
         );
-        assertEquals("Дата релиза меньше минимальной", exception.getMessage());
+        assertEquals("Дата релиза не может быть раньше 28 декабря 1895 года", exception.getMessage());
     }
 
     @Test
     void shouldCreateFilmWithMinReleaseDate() {
         Film film = new Film();
+        film.setMpa(new Mpa(1, "G"));
         film.setName("Film Name");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(1895, 12, 28)); // Минимальная дата
@@ -127,6 +136,7 @@ class FilmControllerTest {
     @Test
     void shouldCreateFilmWithLaterReleaseDate() {
         Film film = new Film();
+        film.setMpa(new Mpa(1, "G"));
         film.setName("Film Name");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
@@ -139,6 +149,7 @@ class FilmControllerTest {
     @Test
     void shouldThrowExceptionWhenDurationNegative() {
         Film film = new Film();
+        film.setMpa(new Mpa(1, "G"));
         film.setName("Film Name");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
@@ -148,12 +159,13 @@ class FilmControllerTest {
                 ValidationException.class,
                 () -> filmController.create(film)
         );
-        assertEquals("Продолжительность фильма должна быть положительным числом", exception.getMessage());
+        assertEquals("Продолжительность фильма должна быть положительной", exception.getMessage());
     }
 
     @Test
     void shouldThrowExceptionWhenDurationZero() {
         Film film = new Film();
+        film.setMpa(new Mpa(1, "G"));
         film.setName("Film Name");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
@@ -163,12 +175,13 @@ class FilmControllerTest {
                 ValidationException.class,
                 () -> filmController.create(film)
         );
-        assertEquals("Продолжительность фильма должна быть положительным числом", exception.getMessage());
+        assertEquals("Продолжительность фильма должна быть положительной", exception.getMessage());
     }
 
     @Test
     void shouldCreateFilmWithPositiveDuration() {
         Film film = new Film();
+        film.setMpa(new Mpa(1, "G"));
         film.setName("Film Name");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));

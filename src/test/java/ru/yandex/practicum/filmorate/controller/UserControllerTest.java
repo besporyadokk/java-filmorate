@@ -49,7 +49,7 @@ class UserControllerTest {
     @Test
     void shouldCreateUserWithValidEmail() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("login");
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -61,7 +61,7 @@ class UserControllerTest {
     @Test
     void shouldThrowExceptionWhenLoginIsNull() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin(null);
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -76,7 +76,7 @@ class UserControllerTest {
     @Test
     void shouldThrowExceptionWhenLoginIsBlank() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("   ");
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -91,7 +91,7 @@ class UserControllerTest {
     @Test
     void shouldCreateUserWithValidLogin() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("validlogin");
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -103,7 +103,7 @@ class UserControllerTest {
     @Test
     void shouldUseLoginWhenNameIsEmpty() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("testlogin");
         user.setName("");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -115,7 +115,7 @@ class UserControllerTest {
     @Test
     void shouldUseLoginWhenNameIsNull() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("testlogin");
         user.setName(null);
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -127,7 +127,7 @@ class UserControllerTest {
     @Test
     void shouldUseLoginWhenNameIsBlank() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("testlogin");
         user.setName("   ");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -139,7 +139,7 @@ class UserControllerTest {
     @Test
     void shouldKeepNameWhenNameIsProvided() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("testlogin");
         user.setName("Real Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -151,7 +151,7 @@ class UserControllerTest {
     @Test
     void shouldThrowExceptionWhenBirthdayInFuture() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("login");
         user.setName("Name");
         user.setBirthday(LocalDate.now().plusDays(1)); // Завтра
@@ -166,7 +166,7 @@ class UserControllerTest {
     @Test
     void shouldCreateUserWithBirthdayToday() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("login");
         user.setName("Name");
         user.setBirthday(LocalDate.now()); // Сегодня
@@ -178,7 +178,7 @@ class UserControllerTest {
     @Test
     void shouldCreateUserWithPastBirthday() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("login");
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1)); // В прошлом
