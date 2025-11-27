@@ -1,10 +1,8 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
-
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
 public class Film {
@@ -14,12 +12,12 @@ public class Film {
     private LocalDate releaseDate;
     private Long duration;
     private Set<Integer> likes;
-    private MpaRating mpaRating;
-    private Genre genre;
-
+    private Mpa mpa;
+    private List<Genre> genres;
 
     public Film() {
         likes = new HashSet<>();
+        genres = new ArrayList<>();
     }
 
     public boolean addLike(Integer id) {
