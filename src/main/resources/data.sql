@@ -1,3 +1,6 @@
+DELETE FROM users;
+ALTER TABLE users ALTER COLUMN id RESTART WITH 1;
+
 -- Заполнение рейтингов MPA
 MERGE INTO mpa_ratings (id, name) KEY (id) VALUES (1, 'G'),
                                                   (2, 'PG'),
