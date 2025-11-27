@@ -1,7 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -9,15 +10,11 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class UserControllerTest {
 
+    @Autowired
     private UserController userController;
-
-    @BeforeEach
-    void setUp() {
-        userController = new UserController();
-    }
-
 
     @Test
     void shouldThrowExceptionWhenEmailIsNull() {
@@ -61,7 +58,6 @@ class UserControllerTest {
         assertNotNull(createdUser.getId());
     }
 
-
     @Test
     void shouldThrowExceptionWhenLoginIsNull() {
         User user = new User();
@@ -103,7 +99,6 @@ class UserControllerTest {
         User createdUser = userController.create(user);
         assertNotNull(createdUser.getId());
     }
-
 
     @Test
     void shouldUseLoginWhenNameIsEmpty() {
@@ -152,7 +147,6 @@ class UserControllerTest {
         User createdUser = userController.create(user);
         assertEquals("Real Name", createdUser.getName());
     }
-
 
     @Test
     void shouldThrowExceptionWhenBirthdayInFuture() {
