@@ -12,7 +12,7 @@ public class User {
     private String login;
     private String name;
     private LocalDate birthday;
-    private Map<Integer, FriendStatus> friends; // ID друга -> статус дружбы
+    private Map<Integer, FriendStatus> friends;
 
     public User() {
         friends = new HashMap<>();

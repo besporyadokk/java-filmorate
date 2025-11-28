@@ -76,7 +76,7 @@ public class UserDbStorage implements UserStorage {
                 id);
 
         if (updated > 0) {
-            // Обновляем друзей
+
             updateFriends(user);
             log.info("Обновлен пользователь с ID: {}", id);
             return user;

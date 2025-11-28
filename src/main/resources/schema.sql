@@ -1,18 +1,18 @@
--- Таблица для хранения рейтингов MPAA
+
 CREATE TABLE IF NOT EXISTS mpa_ratings
 (
     id   INTEGER PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(10) NOT NULL UNIQUE
 );
 
--- Таблица для хранения жанров
+
 CREATE TABLE IF NOT EXISTS genres
 (
     id   INTEGER PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
--- Таблица для хранения пользователей
+
 CREATE TABLE IF NOT EXISTS users
 (
     id       INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS users
     birthday DATE
 );
 
--- Таблица для хранения фильмов
+
 CREATE TABLE IF NOT EXISTS films
 (
     id            INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS films
     FOREIGN KEY (mpa_rating_id) REFERENCES mpa_ratings (id)
 );
 
--- Таблица для связи фильмов и жанров (многие-ко-многим)
+
 CREATE TABLE IF NOT EXISTS film_genres
 (
     film_id  INTEGER NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS film_genres
     FOREIGN KEY (genre_id) REFERENCES genres (id) ON DELETE CASCADE
 );
 
--- Таблица для хранения лайков (многие-ко-многим: пользователи-фильмы)
+
 CREATE TABLE IF NOT EXISTS likes
 (
     film_id INTEGER NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS likes
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
--- Таблица для хранения друзей со статусом
+
 CREATE TABLE IF NOT EXISTS friends
 (
     user_id   INTEGER     NOT NULL,
