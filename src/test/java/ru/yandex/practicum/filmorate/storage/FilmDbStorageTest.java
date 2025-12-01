@@ -134,7 +134,7 @@ class FilmDbStorageTest {
     }
 
     @Test
-    void testFilmWithLikes() {
+    void testAddAndRemoveLike() {
         // Сначала создаем пользователя для лайков
         jdbcTemplate.update("INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)",
                 "user@example.com", "userlogin", "User Name", LocalDate.of(1990, 1, 1));
@@ -142,14 +142,63 @@ class FilmDbStorageTest {
         Film film = createTestFilm();
         Film savedFilm = filmStorage.addFilm(film);
 
-        // Добавляем лайки
-        savedFilm.addLike(1); // ID пользователя = 1
-        filmStorage.updateFilm(savedFilm.getId(), savedFilm);
+        // Добавляем лайк через новый метод
+        filmStorage.addLike(savedFilm.getId(), 1); // ID пользователя = 1
 
-        Film foundFilm = filmStorage.getFilm(savedFilm.getId());
+        // Проверяем, что лайк добавился в БД
+        Integer likeCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM likes WHERE film_id = ? AND user_id = ?",
+                Integer.class, savedFilm.getId(), 1);
+        assertThat(likeCount).isEqualTo(1);
 
-        assertThat(foundFilm.getLikes()).hasSize(1);
-        assertThat(foundFilm.getLikes()).contains(1);
+        // Удаляем лайк через новый метод
+        filmStorage.removeLike(savedFilm.getId(), 1);
+
+        // Проверяем, что лайк удалился из БД
+        likeCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM likes WHERE film_id = ? AND user_id = ?",
+                Integer.class, savedFilm.getId(), 1);
+        assertThat(likeCount).isEqualTo(0);
+    }
+
+    @Test
+    void testGetPopularFilms() {
+        // Создаем двух пользователей
+        jdbcTemplate.update("INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)",
+                "user1@example.com", "user1", "User One", LocalDate.of(1990, 1, 1));
+        jdbcTemplate.update("INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)",
+                "user2@example.com", "user2", "User Two", LocalDate.of(1990, 1, 1));
+
+        // Создаем три фильма
+        Film film1 = createTestFilm();
+        film1.setName("Film One");
+        Film savedFilm1 = filmStorage.addFilm(film1);
+
+        Film film2 = createTestFilm();
+        film2.setName("Film Two");
+        Film savedFilm2 = filmStorage.addFilm(film2);
+
+        Film film3 = createTestFilm();
+        film3.setName("Film Three");
+        Film savedFilm3 = filmStorage.addFilm(film3);
+
+        // Добавляем лайки:
+        // Film1 - 2 лайка
+        // Film2 - 1 лайк
+        // Film3 - 0 лайков
+        filmStorage.addLike(savedFilm1.getId(), 1);
+        filmStorage.addLike(savedFilm1.getId(), 2);
+        filmStorage.addLike(savedFilm2.getId(), 1);
+
+        // Получаем популярные фильмы (2 самых популярных)
+        List<Film> popularFilms = filmStorage.getPopularFilms(2);
+
+        // Проверяем, что вернулось 2 фильма
+        assertThat(popularFilms).hasSize(2);
+
+        // Проверяем порядок: Film1 должен быть первым (2 лайка), Film2 - вторым (1 лайк)
+        assertThat(popularFilms.get(0).getName()).isEqualTo("Film One");
+        assertThat(popularFilms.get(1).getName()).isEqualTo("Film Two");
     }
 
     @Test

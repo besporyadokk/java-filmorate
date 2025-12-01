@@ -10,7 +10,9 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.FriendStatus;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 @Slf4j
@@ -21,22 +23,43 @@ public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
+
+    private static final String SQL_GET_ALL_USERS = "SELECT * FROM users";
+    private static final String SQL_GET_USER_BY_ID = "SELECT * FROM users WHERE id = ?";
+    private static final String SQL_ADD_USER = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
+    private static final String SQL_UPDATE_USER = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
+    private static final String SQL_DELETE_USER = "DELETE FROM users WHERE id = ?";
+
+    private static final String SQL_GET_FRIENDS_BY_USER_ID = "SELECT friend_id, status FROM friends WHERE user_id = ?";
+    private static final String SQL_GET_ALL_FRIENDS_BY_USER_IDS = "SELECT user_id, friend_id, status FROM friends WHERE user_id IN ";
+
+    private static final String SQL_DELETE_FRIENDS = "DELETE FROM friends WHERE user_id = ?";
+    private static final String SQL_ADD_FRIEND = "INSERT INTO friends (user_id, friend_id, status) VALUES (?, ?, ?)";
+
     @Override
     public Map<Integer, User> getUsers() {
-        String sql = "SELECT * FROM users";
-        List<User> users = jdbcTemplate.query(sql, this::mapRowToUser);
+        List<User> users = jdbcTemplate.query(SQL_GET_ALL_USERS, this::mapRowToUser);
+
+        if (!users.isEmpty()) {
+
+            Map<Integer, Map<Integer, FriendStatus>> userFriends = loadAllFriends(users);
+
+
+            for (User user : users) {
+                user.setFriends(userFriends.getOrDefault(user.getId(), new HashMap<>()));
+            }
+        }
+
         Map<Integer, User> userMap = new HashMap<>();
         for (User user : users) {
             userMap.put(user.getId(), user);
-            loadFriends(user);
         }
         return userMap;
     }
 
     @Override
     public User getUser(Integer id) {
-        String sql = "SELECT * FROM users WHERE id = ?";
-        List<User> users = jdbcTemplate.query(sql, this::mapRowToUser, id);
+        List<User> users = jdbcTemplate.query(SQL_GET_USER_BY_ID, this::mapRowToUser, id);
         if (users.isEmpty()) {
             return null;
         }
@@ -47,12 +70,10 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User addUser(User user) {
-        String sql = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sql, new String[]{"id"});
+            PreparedStatement stmt = connection.prepareStatement(SQL_ADD_USER, new String[]{"id"});
             stmt.setString(1, user.getEmail());
             stmt.setString(2, user.getLogin());
             stmt.setString(3, user.getName());
@@ -67,8 +88,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User updateUser(Integer id, User user) {
-        String sql = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
-        int updated = jdbcTemplate.update(sql,
+        int updated = jdbcTemplate.update(SQL_UPDATE_USER,
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
@@ -76,7 +96,6 @@ public class UserDbStorage implements UserStorage {
                 id);
 
         if (updated > 0) {
-
             updateFriends(user);
             log.info("Обновлен пользователь с ID: {}", id);
             return user;
@@ -86,8 +105,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void deleteUser(Integer id) {
-        String sql = "DELETE FROM users WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(SQL_DELETE_USER, id);
         log.info("Удален пользователь с ID: {}", id);
     }
 
@@ -107,27 +125,62 @@ public class UserDbStorage implements UserStorage {
     }
 
     private void loadFriends(User user) {
-        String sql = "SELECT friend_id, status FROM friends WHERE user_id = ?";
-        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, user.getId());
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(SQL_GET_FRIENDS_BY_USER_ID, user.getId());
 
         Map<Integer, FriendStatus> friends = new HashMap<>();
         for (Map<String, Object> row : rows) {
             Integer friendId = (Integer) row.get("friend_id");
             String status = (String) row.get("status");
-            friends.put(friendId, FriendStatus.valueOf(status));
+            friends.put(friendId, createFriendStatus(friendId, status));
         }
         user.setFriends(friends);
     }
 
+    private Map<Integer, Map<Integer, FriendStatus>> loadAllFriends(List<User> users) {
+        if (users.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+
+        List<Integer> userIds = users.stream()
+                .map(User::getId)
+                .toList();
+
+
+        String inClause = "(" + String.join(",", Collections.nCopies(userIds.size(), "?")) + ")";
+        String sql = SQL_GET_ALL_FRIENDS_BY_USER_IDS + inClause;
+
+        Map<Integer, Map<Integer, FriendStatus>> allFriends = new HashMap<>();
+
+        jdbcTemplate.query(sql, userIds.toArray(), rs -> {
+            Integer userId = rs.getInt("user_id");
+            Integer friendId = rs.getInt("friend_id");
+            String status = rs.getString("status");
+
+            allFriends.computeIfAbsent(userId, k -> new HashMap<>())
+                    .put(friendId, createFriendStatus(friendId, status));
+        });
+
+        return allFriends;
+    }
+
+    private FriendStatus createFriendStatus(Integer friendId, String status) {
+        try {
+            return FriendStatus.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            log.warn("Некорректный статус дружбы для пользователя {}: {}. Используется UNCONFIRMED",
+                    friendId, status);
+            return FriendStatus.UNCONFIRMED;
+        }
+    }
+
     private void updateFriends(User user) {
 
-        String deleteSql = "DELETE FROM friends WHERE user_id = ?";
-        jdbcTemplate.update(deleteSql, user.getId());
+        jdbcTemplate.update(SQL_DELETE_FRIENDS, user.getId());
 
 
-        String insertSql = "INSERT INTO friends (user_id, friend_id, status) VALUES (?, ?, ?)";
         for (Map.Entry<Integer, FriendStatus> entry : user.getFriends().entrySet()) {
-            jdbcTemplate.update(insertSql, user.getId(), entry.getKey(), entry.getValue().toString());
+            jdbcTemplate.update(SQL_ADD_FRIEND, user.getId(), entry.getKey(), entry.getValue().toString());
         }
     }
 }
