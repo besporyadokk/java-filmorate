@@ -11,7 +11,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,16 +26,63 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Import(FilmDbStorage.class)
+@Import({FilmDbStorage.class, UserDbStorage.class})  // Импортируем оба storage
 class FilmDbStorageTest {
 
     private final FilmDbStorage filmStorage;
+    private final UserStorage userStorage;  // Добавляем UserStorage
     private final JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        // Убедимся, что данные инициализированы
-        // Spring Boot автоматически выполнит schema.sql и data.sql
+        // Очищаем таблицы в правильном порядке (с учетом foreign keys)
+        jdbcTemplate.update("DELETE FROM likes");
+        jdbcTemplate.update("DELETE FROM film_genres");
+        jdbcTemplate.update("DELETE FROM friends");
+        jdbcTemplate.update("DELETE FROM films");
+        jdbcTemplate.update("DELETE FROM users");
+
+        // Сбрасываем автоинкремент
+        jdbcTemplate.update("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.update("ALTER TABLE films ALTER COLUMN id RESTART WITH 1");
+
+        // Инициализируем справочные данные (MPA и жанры)
+        jdbcTemplate.update("MERGE INTO mpa_ratings (id, name) KEY (id) VALUES (1, 'G'), (2, 'PG'), (3, 'PG-13'), (4, 'R'), (5, 'NC-17')");
+        jdbcTemplate.update("MERGE INTO genres (id, name) KEY (id) VALUES (1, 'Комедия'), (2, 'Драма'), (3, 'Мультфильм'), (4, 'Триллер'), (5, 'Документальный'), (6, 'Боевик')");
+    }
+
+    @Test
+    void testAddAndRemoveLike() {
+        // Сначала создаем пользователя для лайков через UserStorage
+        User user = new User();
+        user.setEmail("user@example.com");
+        user.setLogin("userlogin");
+        user.setName("User Name");
+        user.setBirthday(LocalDate.of(1990, 1, 1));
+
+        User savedUser = userStorage.addUser(user);
+        Integer userId = savedUser.getId();
+
+        Film film = createTestFilm();
+        Film savedFilm = filmStorage.addFilm(film);
+
+        // Добавляем лайк через новый метод
+        filmStorage.addLike(savedFilm.getId(), userId);
+
+        // Проверяем, что лайк добавился в БД
+        Integer likeCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM likes WHERE film_id = ? AND user_id = ?",
+                Integer.class, savedFilm.getId(), userId);
+        assertThat(likeCount).isEqualTo(1);
+
+        // Удаляем лайк через новый метод
+        filmStorage.removeLike(savedFilm.getId(), userId);
+
+        // Проверяем, что лайк удалился из БД
+        likeCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM likes WHERE film_id = ? AND user_id = ?",
+                Integer.class, savedFilm.getId(), userId);
+        assertThat(likeCount).isEqualTo(0);
     }
 
     @Test
@@ -134,40 +184,21 @@ class FilmDbStorageTest {
     }
 
     @Test
-    void testAddAndRemoveLike() {
-        // Сначала создаем пользователя для лайков
-        jdbcTemplate.update("INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)",
-                "user@example.com", "userlogin", "User Name", LocalDate.of(1990, 1, 1));
-
-        Film film = createTestFilm();
-        Film savedFilm = filmStorage.addFilm(film);
-
-        // Добавляем лайк через новый метод
-        filmStorage.addLike(savedFilm.getId(), 1); // ID пользователя = 1
-
-        // Проверяем, что лайк добавился в БД
-        Integer likeCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM likes WHERE film_id = ? AND user_id = ?",
-                Integer.class, savedFilm.getId(), 1);
-        assertThat(likeCount).isEqualTo(1);
-
-        // Удаляем лайк через новый метод
-        filmStorage.removeLike(savedFilm.getId(), 1);
-
-        // Проверяем, что лайк удалился из БД
-        likeCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM likes WHERE film_id = ? AND user_id = ?",
-                Integer.class, savedFilm.getId(), 1);
-        assertThat(likeCount).isEqualTo(0);
-    }
-
-    @Test
     void testGetPopularFilms() {
         // Создаем двух пользователей
-        jdbcTemplate.update("INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)",
-                "user1@example.com", "user1", "User One", LocalDate.of(1990, 1, 1));
-        jdbcTemplate.update("INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)",
-                "user2@example.com", "user2", "User Two", LocalDate.of(1990, 1, 1));
+        User user1 = new User();
+        user1.setEmail("user1@example.com");
+        user1.setLogin("user1");
+        user1.setName("User One");
+        user1.setBirthday(LocalDate.of(1990, 1, 1));
+        User savedUser1 = userStorage.addUser(user1);
+
+        User user2 = new User();
+        user2.setEmail("user2@example.com");
+        user2.setLogin("user2");
+        user2.setName("User Two");
+        user2.setBirthday(LocalDate.of(1990, 1, 1));
+        User savedUser2 = userStorage.addUser(user2);
 
         // Создаем три фильма
         Film film1 = createTestFilm();
@@ -186,9 +217,9 @@ class FilmDbStorageTest {
         // Film1 - 2 лайка
         // Film2 - 1 лайк
         // Film3 - 0 лайков
-        filmStorage.addLike(savedFilm1.getId(), 1);
-        filmStorage.addLike(savedFilm1.getId(), 2);
-        filmStorage.addLike(savedFilm2.getId(), 1);
+        filmStorage.addLike(savedFilm1.getId(), savedUser1.getId());
+        filmStorage.addLike(savedFilm1.getId(), savedUser2.getId());
+        filmStorage.addLike(savedFilm2.getId(), savedUser1.getId());
 
         // Получаем популярные фильмы (2 самых популярных)
         List<Film> popularFilms = filmStorage.getPopularFilms(2);
