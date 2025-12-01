@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -11,6 +13,8 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Transactional
 class UserControllerTest {
 
     @Autowired
@@ -49,7 +53,7 @@ class UserControllerTest {
     @Test
     void shouldCreateUserWithValidEmail() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("login");
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -61,7 +65,7 @@ class UserControllerTest {
     @Test
     void shouldThrowExceptionWhenLoginIsNull() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin(null);
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -76,7 +80,7 @@ class UserControllerTest {
     @Test
     void shouldThrowExceptionWhenLoginIsBlank() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("   ");
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -91,7 +95,7 @@ class UserControllerTest {
     @Test
     void shouldCreateUserWithValidLogin() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("validlogin");
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -103,7 +107,7 @@ class UserControllerTest {
     @Test
     void shouldUseLoginWhenNameIsEmpty() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("testlogin");
         user.setName("");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -115,7 +119,7 @@ class UserControllerTest {
     @Test
     void shouldUseLoginWhenNameIsNull() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("testlogin");
         user.setName(null);
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -127,7 +131,7 @@ class UserControllerTest {
     @Test
     void shouldUseLoginWhenNameIsBlank() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("testlogin");
         user.setName("   ");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -139,7 +143,7 @@ class UserControllerTest {
     @Test
     void shouldKeepNameWhenNameIsProvided() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("testlogin");
         user.setName("Real Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -151,7 +155,7 @@ class UserControllerTest {
     @Test
     void shouldThrowExceptionWhenBirthdayInFuture() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("login");
         user.setName("Name");
         user.setBirthday(LocalDate.now().plusDays(1)); // Завтра
@@ -166,7 +170,7 @@ class UserControllerTest {
     @Test
     void shouldCreateUserWithBirthdayToday() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("login");
         user.setName("Name");
         user.setBirthday(LocalDate.now()); // Сегодня
@@ -178,7 +182,7 @@ class UserControllerTest {
     @Test
     void shouldCreateUserWithPastBirthday() {
         User user = new User();
-        user.setEmail("test@email.com");
+        user.setEmail("unique" + System.currentTimeMillis() + "@email.com");
         user.setLogin("login");
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1)); // В прошлом

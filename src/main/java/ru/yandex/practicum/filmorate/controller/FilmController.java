@@ -54,4 +54,9 @@ public class FilmController {
     ) {
         return filmService.getPopularFilms(count);
     }
+
+    @GetMapping("/{id}")
+    public Film getFilm(@PathVariable Integer id) {
+        return filmService.getFilm(id);
+    }
 }
